@@ -29,7 +29,7 @@ namespace Valve.VR.InteractionSystem.Sample
         private Interactable interactable;
 
         // Game ball's Rigidbody
-        private Rigidbody ballRb;
+        public Rigidbody ballRb;
 
         private void Start()
         {

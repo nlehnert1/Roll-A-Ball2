@@ -54,7 +54,6 @@ public class CubeTeleporter : MonoBehaviour
     {
         fadingOut = targetOpacity == 0;
         fadingIn = targetOpacity == 0;
-        //Debug.Log("Touched FadeTo. Fading to opacity " + targetOpacity);
 
         float t = 0;
 
@@ -64,7 +63,6 @@ public class CubeTeleporter : MonoBehaviour
             Color c = targetMaterial.color;
             float blendValue = Mathf.Clamp01(t / duration);
             c.a = Mathf.Lerp(startingOpacity, targetOpacity, blendValue);
-            Debug.Log(Mathf.Lerp(startingOpacity, targetOpacity, blendValue));
             targetMaterial.color = c;
             yield return null;
         }
@@ -72,59 +70,8 @@ public class CubeTeleporter : MonoBehaviour
         if (fadingOut) fadingOut = !fadingOut;
     }
 
-    IEnumerator FadeOut()
-    {
-        float duration = 0.5f;
-        float t = 0;
-        float startOpacity = meshRenderer.material.color.a;
-        while(t < duration)
-        {
-            t += Time.deltaTime;
-            Color c = meshRenderer.material.color;
-            float blend = Mathf.Clamp01(t / duration);
-            c.a = Mathf.Lerp(startOpacity, 0, blend);
-            meshRenderer.material.color = c;
-            yield return null;
-        }
-
-        /*for(float fadeTime = .25f; fadeTime >= 0.0f; fadeTime -= 0.01f)
-        {
-            Color c = meshRenderer.material.color;
-            c.a = fadeTime;
-            meshRenderer.material.color = c;
-            yield return null;
-        }*/
-        yield return new WaitForSeconds(0.25f);
-        StartCoroutine(FadeIn());
-    }
-
-    IEnumerator FadeIn()
-    {
-        float duration = 0.5f;
-        float t = 0;
-        float startOpacity = meshRenderer.material.color.a;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            Color c = meshRenderer.material.color;
-            float blend = Mathf.Clamp01(t / duration);
-            c.a = Mathf.Lerp(startOpacity, 1, blend);
-            meshRenderer.material.color = c;
-            yield return null;
-        }
-        for (float fadeTime = 0.0f; fadeTime <= 1.0f; fadeTime += 0.01f)
-        {
-            Color c = meshRenderer.material.color;
-            c.a = fadeTime;
-            meshRenderer.material.color = c;
-            yield return null;
-        }
-        yield return new WaitForSeconds(1.5f);
-    }
-
     IEnumerator TeleportToNewLocation()
     {
-        Debug.Log("Touched TeleportToNewLocation.");
         findingNewLocation = true;
         Vector3 newTransform = new Vector3();
         yield return new WaitForSeconds(1.5f);
