@@ -6,8 +6,8 @@ public class ColorChanger : MonoBehaviour
 {
     MeshRenderer meshRenderer;
     private List<Color> rainbow = new List<Color> { Color.red, Color.yellow, Color.green, Color.blue };
-    private int currColorIndex = 0;
-    private int nextColorIndex = 1;
+    public int currColorIndex = 0;
+    public int nextColorIndex = 1;
     private bool startedColorShift = false;
     float time = 0.0f;
 
@@ -23,7 +23,7 @@ public class ColorChanger : MonoBehaviour
     {
         meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, rainbow[nextColorIndex], 0.01f);
         time += Time.deltaTime;
-        if(time > 1.0f)
+        if(time > 1.5f)
         {
             time = 0f;
             nextColorIndex++;

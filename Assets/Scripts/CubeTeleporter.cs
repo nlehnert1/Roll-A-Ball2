@@ -11,13 +11,25 @@ public class CubeTeleporter : MonoBehaviour
     private System.Random random;
     private Transform GOTransform;
     private bool findingNewLocation;
+    MeshRenderer meshRenderer;
+    MeshRenderer childRenderer;
     Material material;
+    Material childMaterial;
+    bool isParent;
+    bool fadingIn;
+    bool fadingOut;
 
     private void Start()
     {
         random = new System.Random();
         findingNewLocation = false;
-        material = gameObject.GetComponent<Material>();
+        fadingIn = false;
+        fadingOut = false;
+        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        //childRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+        material = meshRenderer.material;
+        //childMaterial = childRenderer.material;
+        isParent = gameObject.CompareTag("Pick Up Special");
     }
 
     // Update is called once per frame
@@ -26,27 +38,123 @@ public class CubeTeleporter : MonoBehaviour
 
         if (!findingNewLocation)
         {
+            //StartCoroutine(FadeTo(material, 1, 0, 1.0f));
             StartCoroutine(TeleportToNewLocation());
+            //StartCoroutine(FadeTo(material, 0, 1, 1.0f));
         }
     }
 
-    /*IEnumerator Fade()
+    /// <summary>
+    /// After waiting for waitTime, causes the color of the provided material to fade from starting opacity to target opacity over a specified duration;
+    /// </summary>
+    /// <param name="opacity"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    IEnumerator FadeTo(Material targetMaterial, float startingOpacity, float targetOpacity, float duration)
     {
-        for(float fadeTime = 1f; fadeTime >= 0; fadeTime -= 0.1f)
+        fadingOut = targetOpacity == 0;
+        fadingIn = targetOpacity == 0;
+        //Debug.Log("Touched FadeTo. Fading to opacity " + targetOpacity);
+
+        float t = 0;
+
+        while(t < duration)
         {
-            material.color.a = fadeTime; 
+            t += Time.deltaTime;
+            Color c = targetMaterial.color;
+            float blendValue = Mathf.Clamp01(t / duration);
+            c.a = Mathf.Lerp(startingOpacity, targetOpacity, blendValue);
+            Debug.Log(Mathf.Lerp(startingOpacity, targetOpacity, blendValue));
+            targetMaterial.color = c;
+            yield return null;
         }
-    }*/
+        if (fadingIn) fadingIn = !fadingIn;
+        if (fadingOut) fadingOut = !fadingOut;
+    }
+
+    IEnumerator FadeOut()
+    {
+        float duration = 0.5f;
+        float t = 0;
+        float startOpacity = meshRenderer.material.color.a;
+        while(t < duration)
+        {
+            t += Time.deltaTime;
+            Color c = meshRenderer.material.color;
+            float blend = Mathf.Clamp01(t / duration);
+            c.a = Mathf.Lerp(startOpacity, 0, blend);
+            meshRenderer.material.color = c;
+            yield return null;
+        }
+
+        /*for(float fadeTime = .25f; fadeTime >= 0.0f; fadeTime -= 0.01f)
+        {
+            Color c = meshRenderer.material.color;
+            c.a = fadeTime;
+            meshRenderer.material.color = c;
+            yield return null;
+        }*/
+        yield return new WaitForSeconds(0.25f);
+        StartCoroutine(FadeIn());
+    }
+
+    IEnumerator FadeIn()
+    {
+        float duration = 0.5f;
+        float t = 0;
+        float startOpacity = meshRenderer.material.color.a;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            Color c = meshRenderer.material.color;
+            float blend = Mathf.Clamp01(t / duration);
+            c.a = Mathf.Lerp(startOpacity, 1, blend);
+            meshRenderer.material.color = c;
+            yield return null;
+        }
+        for (float fadeTime = 0.0f; fadeTime <= 1.0f; fadeTime += 0.01f)
+        {
+            Color c = meshRenderer.material.color;
+            c.a = fadeTime;
+            meshRenderer.material.color = c;
+            yield return null;
+        }
+        yield return new WaitForSeconds(1.5f);
+    }
 
     IEnumerator TeleportToNewLocation()
     {
+        Debug.Log("Touched TeleportToNewLocation.");
         findingNewLocation = true;
-        yield return new WaitForSeconds(3.0f);
-        float newX = float.Parse(random.NextDouble().ToString());
-        float newZ = float.Parse(random.NextDouble().ToString());
-        Vector3 newTransform = new Vector3(newX * xMax - xOffset, transform.position.y, newZ * xMax - xOffset);
-        //StartCoroutine(Fade());
-        transform.position = newTransform;
+        Vector3 newTransform = new Vector3();
+        yield return new WaitForSeconds(1.5f);
+        StartCoroutine(FadeTo(material, 1, 0, 1.0f));            //These both wait from t=0 to t=2, then run from t=2 to t=2.75
+        //StartCoroutine(FadeTo(childMaterial, 1, 0, 2.0f, 0.75f));
+
+        // Pickup is fading out. Don't progress teleportation yet.
+        while (fadingOut)
+        {
+            yield return null;
+        }
+
+        //Finished fading out. Wait .25 sec, then continue
+        //yield return new WaitForSecondsRealtime(0.25f);
+        if (isParent)
+        {
+            float newX = float.Parse(random.NextDouble().ToString());
+            float newZ = float.Parse(random.NextDouble().ToString());
+            newTransform = new Vector3(newX * xMax - xOffset, transform.position.y, newZ * xMax - xOffset);
+            transform.position = newTransform;
+        }
+
+
+        StartCoroutine(FadeTo(material, 0, 1, 1.0f));             //These SHOULD wait from t=3.5 to t=4, then fade back in from t=4 to t=5
+        //StartCoroutine(FadeTo(childMaterial, 0, 1, 0.5f, 1.0f));        
+        while (fadingIn)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(1.5f);
         findingNewLocation = false;
     }
 }
