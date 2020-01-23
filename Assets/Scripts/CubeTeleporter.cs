@@ -45,9 +45,11 @@ public class CubeTeleporter : MonoBehaviour
     }
 
     /// <summary>
-    /// After waiting for waitTime, causes the color of the provided material to fade from starting opacity to target opacity over a specified duration;
+    /// 
     /// </summary>
-    /// <param name="opacity"></param>
+    /// <param name="targetMaterial"></param>
+    /// <param name="startingOpacity"></param>
+    /// <param name="targetOpacity"></param>
     /// <param name="duration"></param>
     /// <returns></returns>
     IEnumerator FadeTo(Material targetMaterial, float startingOpacity, float targetOpacity, float duration)
@@ -75,17 +77,12 @@ public class CubeTeleporter : MonoBehaviour
         findingNewLocation = true;
         Vector3 newTransform = new Vector3();
         yield return new WaitForSeconds(1.5f);
-        StartCoroutine(FadeTo(material, 1, 0, 1.0f));            //These both wait from t=0 to t=2, then run from t=2 to t=2.75
-        //StartCoroutine(FadeTo(childMaterial, 1, 0, 2.0f, 0.75f));
-
-        // Pickup is fading out. Don't progress teleportation yet.
+        StartCoroutine(FadeTo(material, 1, 0, 1.0f));            
         while (fadingOut)
         {
             yield return null;
         }
 
-        //Finished fading out. Wait .25 sec, then continue
-        //yield return new WaitForSecondsRealtime(0.25f);
         if (isParent)
         {
             float newX = float.Parse(random.NextDouble().ToString());
@@ -95,8 +92,7 @@ public class CubeTeleporter : MonoBehaviour
         }
 
 
-        StartCoroutine(FadeTo(material, 0, 1, 1.0f));             //These SHOULD wait from t=3.5 to t=4, then fade back in from t=4 to t=5
-        //StartCoroutine(FadeTo(childMaterial, 0, 1, 0.5f, 1.0f));        
+        StartCoroutine(FadeTo(material, 0, 1, 1.0f));
         while (fadingIn)
         {
             yield return null;
