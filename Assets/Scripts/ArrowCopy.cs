@@ -137,6 +137,7 @@ namespace Valve.VR.InteractionSystem
 				float rbSpeed = rb.velocity.sqrMagnitude;
 				bool canStick = ( targetPhysMaterial != null && collision.collider.sharedMaterial == targetPhysMaterial && rbSpeed > 0.2f );
 				bool hitBalloon = collision.collider.gameObject.GetComponent<Balloon>() != null;
+                bool hitPickup = collision.collider.gameObject.GetComponent<Rotator>() != null;
 
 				if ( travelledFrames < 2 && !canStick )
 				{
@@ -194,6 +195,22 @@ namespace Valve.VR.InteractionSystem
 					Physics.IgnoreCollision( arrowHeadRB.GetComponent<Collider>(), collision.collider );
 					Physics.IgnoreCollision( shaftRB.GetComponent<Collider>(), collision.collider );
 				}
+
+                if(hitPickup)
+                {
+                    //Let arrow keep travelling through
+                    transform.position = prevPosition;
+                    transform.rotation = prevRotation;
+                    arrowHeadRB.velocity = prevVelocity;
+                    Physics.IgnoreCollision(arrowHeadRB.GetComponent<Collider>(), collision.collider);
+                    Physics.IgnoreCollision(shaftRB.GetComponent<Collider>(), collision.collider);
+
+                    // delete the pickup object
+                    if(collision.gameObject.CompareTag("Pick Up") || collision.gameObject.CompareTag("Pick Up Special"))
+                    {
+                        collision.gameObject.SetActive(false);
+                    }
+                }
 
 				if ( canStick )
 				{

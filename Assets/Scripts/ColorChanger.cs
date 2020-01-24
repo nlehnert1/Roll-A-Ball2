@@ -23,7 +23,7 @@ public class ColorChanger : MonoBehaviour
     {
         meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, rainbow[nextColorIndex], 0.01f);
         time += Time.deltaTime;
-        if(time > 1.5f)
+        if(time > 0.5f)
         {
             time = 0f;
             nextColorIndex++;
