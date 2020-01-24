@@ -6,6 +6,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
@@ -37,6 +38,10 @@ namespace Valve.VR.InteractionSystem
 
 		private GameObject scaleParentObject = null;
 
+        private int arrowsFired = 0;
+
+        public List<GameObject> pickups;
+
 
 		//-------------------------------------------------
 		void Start()
@@ -62,6 +67,19 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		public void ArrowReleased( float inputVelocity )
 		{
+            arrowsFired++;
+            if(arrowsFired % 4 == 0)
+            {
+                foreach(GameObject pickup in pickups)
+                {
+                    // Set first inactive pickup to become active again every 3 arrows that are fired.
+                    if(!pickup.activeInHierarchy)
+                    {
+                        pickup.SetActive(true);
+                        break;
+                    }
+                }
+            }
 			inFlight = true;
 			released = true;
 
