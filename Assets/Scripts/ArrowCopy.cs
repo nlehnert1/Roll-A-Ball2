@@ -179,14 +179,14 @@ namespace Valve.VR.InteractionSystem
 				{
 					// Only count collisions with good speed so that arrows on the ground can't deal damage
 					// always pop balloons
-					if ( rbSpeed > 0.1f || hitBalloon )
+					if ( rbSpeed > 0.1f || hitBalloon || hitPickup )
 					{
 						collision.collider.gameObject.SendMessageUpwards( "ApplyDamage", SendMessageOptions.DontRequireReceiver );
 						gameObject.SendMessage( "HasAppliedDamage", SendMessageOptions.DontRequireReceiver );
 					}
 				}
 
-				if ( hitBalloon )
+				if ( hitBalloon || hitPickup)
 				{
 					// Revert my physics properties cause I don't want balloons to influence my travel
 					transform.position = prevPosition;
@@ -195,22 +195,6 @@ namespace Valve.VR.InteractionSystem
 					Physics.IgnoreCollision( arrowHeadRB.GetComponent<Collider>(), collision.collider );
 					Physics.IgnoreCollision( shaftRB.GetComponent<Collider>(), collision.collider );
 				}
-
-                if(hitPickup)
-                {
-                    //Let arrow keep travelling through
-                    transform.position = prevPosition;
-                    transform.rotation = prevRotation;
-                    arrowHeadRB.velocity = prevVelocity;
-                    Physics.IgnoreCollision(arrowHeadRB.GetComponent<Collider>(), collision.collider);
-                    Physics.IgnoreCollision(shaftRB.GetComponent<Collider>(), collision.collider);
-
-                    // delete the pickup object
-                    if(collision.gameObject.CompareTag("Pick Up") || collision.gameObject.CompareTag("Pick Up Special"))
-                    {
-                        collision.gameObject.SetActive(false);
-                    }
-                }
 
 				if ( canStick )
 				{

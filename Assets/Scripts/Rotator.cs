@@ -9,4 +9,9 @@ public class Rotator : MonoBehaviour
     {
         transform.Rotate(new Vector3(15, 40, 35) * Time.deltaTime);
     }
+
+    private void ApplyDamage()
+    {
+        gameObject.SetActive(false);
+    }
 }
