@@ -137,6 +137,7 @@ namespace Valve.VR.InteractionSystem
 				float rbSpeed = rb.velocity.sqrMagnitude;
 				bool canStick = ( targetPhysMaterial != null && collision.collider.sharedMaterial == targetPhysMaterial && rbSpeed > 0.2f );
 				bool hitBalloon = collision.collider.gameObject.GetComponent<Balloon>() != null;
+                bool hitPickup = collision.collider.gameObject.GetComponent<Rotator>() != null;
 
 				if ( travelledFrames < 2 && !canStick )
 				{
@@ -178,14 +179,14 @@ namespace Valve.VR.InteractionSystem
 				{
 					// Only count collisions with good speed so that arrows on the ground can't deal damage
 					// always pop balloons
-					if ( rbSpeed > 0.1f || hitBalloon )
+					if ( rbSpeed > 0.1f || hitBalloon || hitPickup )
 					{
 						collision.collider.gameObject.SendMessageUpwards( "ApplyDamage", SendMessageOptions.DontRequireReceiver );
 						gameObject.SendMessage( "HasAppliedDamage", SendMessageOptions.DontRequireReceiver );
 					}
 				}
 
-				if ( hitBalloon )
+				if ( hitBalloon || hitPickup)
 				{
 					// Revert my physics properties cause I don't want balloons to influence my travel
 					transform.position = prevPosition;
@@ -208,9 +209,19 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
+        private void OnTriggerEnter(Collider other)
+        {
+            bool hitPickup = other.gameObject.GetComponent<Rotator>() != null;
 
-		//-------------------------------------------------
-		private void StickInTarget( Collision collision, bool bSkipRayCast )
+            if (hitPickup)
+            {
+                other.gameObject.SendMessageUpwards("ApplyDamage", SendMessageOptions.DontRequireReceiver);
+                gameObject.SendMessage("HasAppliedDamage", SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        //-------------------------------------------------
+        private void StickInTarget( Collision collision, bool bSkipRayCast )
 		{
 			Vector3 prevForward = prevRotation * Vector3.forward;
 

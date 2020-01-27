@@ -35,11 +35,11 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Pick Up") || other.gameObject.CompareTag("Pick Up Special"))
         {
-            other.gameObject.SetActive(false);
-            if(other.gameObject.CompareTag("Pick Up Special"))
+            if (other.gameObject.CompareTag("Pick Up Special"))
             {
                 count += 4;
             }
+            other.gameObject.SetActive(false);
             count++;
         }
         SetCountText();

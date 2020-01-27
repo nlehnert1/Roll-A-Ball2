@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85480da87762944399dab6c99985eef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowPrefab: {fileID: 173732, guid: 81fc1450441aca64e8cc1a0e14b1aa77, type: 3}
+  arrowPrefab: {fileID: 173732, guid: df27d511d6ece1d43b0c03f70019bc49, type: 3}
   arrowNockTransform: {fileID: 413922}
   nockDistance: 0.1
   lerpCompleteDistance: 0.08
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57468e6cbae21894fa42c90413c294ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPackage: {fileID: 11450054, guid: 98a3ad29136d5c04f8a025adf1cbd704, type: 3}
+  itemPackage: {fileID: 11450054, guid: c3510d812daa5704cac552a6329a30e3, type: 3}
 --- !u!114 &11443248
 MonoBehaviour:
   m_ObjectHideFlags: 0
