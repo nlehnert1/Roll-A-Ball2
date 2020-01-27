@@ -209,9 +209,19 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
+        private void OnTriggerEnter(Collider other)
+        {
+            bool hitPickup = other.gameObject.GetComponent<Rotator>() != null;
 
-		//-------------------------------------------------
-		private void StickInTarget( Collision collision, bool bSkipRayCast )
+            if (hitPickup)
+            {
+                other.gameObject.SendMessageUpwards("ApplyDamage", SendMessageOptions.DontRequireReceiver);
+                gameObject.SendMessage("HasAppliedDamage", SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        //-------------------------------------------------
+        private void StickInTarget( Collision collision, bool bSkipRayCast )
 		{
 			Vector3 prevForward = prevRotation * Vector3.forward;
 
