@@ -186,7 +186,7 @@ namespace Valve.VR.InteractionSystem
 					}
 				}
 
-				if ( hitBalloon || hitPickup)
+				if ( hitBalloon)
 				{
 					// Revert my physics properties cause I don't want balloons to influence my travel
 					transform.position = prevPosition;
@@ -211,9 +211,10 @@ namespace Valve.VR.InteractionSystem
 
         private void OnTriggerEnter(Collider other)
         {
+            bool hitEnemy = other.gameObject.GetComponent<MoveTowardsPlayer>() != null;
             bool hitPickup = other.gameObject.GetComponent<Rotator>() != null;
 
-            if (hitPickup)
+            if (hitEnemy || hitPickup)
             {
                 other.gameObject.SendMessageUpwards("ApplyDamage", SendMessageOptions.DontRequireReceiver);
                 gameObject.SendMessage("HasAppliedDamage", SendMessageOptions.DontRequireReceiver);
