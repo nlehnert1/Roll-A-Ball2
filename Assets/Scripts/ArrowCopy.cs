@@ -40,13 +40,14 @@ namespace Valve.VR.InteractionSystem
 
         private int arrowsFired = 0;
 
-        public List<GameObject> pickups;
+        public GameObject[] pickups;
 
 
 		//-------------------------------------------------
 		void Start()
 		{
 			Physics.IgnoreCollision( shaftRB.GetComponent<Collider>(), Player.instance.headCollider );
+            pickups = GameObject.FindGameObjectsWithTag("Pick Up");
 		}
 
 
@@ -67,19 +68,6 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		public void ArrowReleased( float inputVelocity )
 		{
-            arrowsFired++;
-            if(arrowsFired % 4 == 0)
-            {
-                foreach(GameObject pickup in pickups)
-                {
-                    // Set first inactive pickup to become active again every 3 arrows that are fired.
-                    if(!pickup.activeInHierarchy)
-                    {
-                        pickup.SetActive(true);
-                        break;
-                    }
-                }
-            }
 			inFlight = true;
 			released = true;
 
@@ -137,7 +125,6 @@ namespace Valve.VR.InteractionSystem
 				float rbSpeed = rb.velocity.sqrMagnitude;
 				bool canStick = ( targetPhysMaterial != null && collision.collider.sharedMaterial == targetPhysMaterial && rbSpeed > 0.2f );
 				bool hitBalloon = collision.collider.gameObject.GetComponent<Balloon>() != null;
-                bool hitPickup = collision.collider.gameObject.GetComponent<Rotator>() != null;
 
 				if ( travelledFrames < 2 && !canStick )
 				{
@@ -179,7 +166,7 @@ namespace Valve.VR.InteractionSystem
 				{
 					// Only count collisions with good speed so that arrows on the ground can't deal damage
 					// always pop balloons
-					if ( rbSpeed > 0.1f || hitBalloon || hitPickup )
+					if ( rbSpeed > 0.1f || hitBalloon )
 					{
 						collision.collider.gameObject.SendMessageUpwards( "ApplyDamage", SendMessageOptions.DontRequireReceiver );
 						gameObject.SendMessage( "HasAppliedDamage", SendMessageOptions.DontRequireReceiver );
@@ -218,6 +205,7 @@ namespace Valve.VR.InteractionSystem
             {
                 other.gameObject.SendMessageUpwards("ApplyDamage", SendMessageOptions.DontRequireReceiver);
                 gameObject.SendMessage("HasAppliedDamage", SendMessageOptions.DontRequireReceiver);
+                Destroy(gameObject);
             }
         }
 
