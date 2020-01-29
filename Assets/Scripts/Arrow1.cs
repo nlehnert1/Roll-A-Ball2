@@ -6,12 +6,11 @@
 
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
-	public class ArrowCopy : MonoBehaviour
+	public class Arrow1 : MonoBehaviour
 	{
 		public ParticleSystem glintParticle;
 		public Rigidbody arrowHeadRB;
@@ -38,16 +37,11 @@ namespace Valve.VR.InteractionSystem
 
 		private GameObject scaleParentObject = null;
 
-        private int arrowsFired = 0;
-
-        public GameObject[] pickups;
-
 
 		//-------------------------------------------------
 		void Start()
 		{
 			Physics.IgnoreCollision( shaftRB.GetComponent<Collider>(), Player.instance.headCollider );
-            pickups = GameObject.FindGameObjectsWithTag("Pick Up");
 		}
 
 
@@ -125,6 +119,7 @@ namespace Valve.VR.InteractionSystem
 				float rbSpeed = rb.velocity.sqrMagnitude;
 				bool canStick = ( targetPhysMaterial != null && collision.collider.sharedMaterial == targetPhysMaterial && rbSpeed > 0.2f );
 				bool hitBalloon = collision.collider.gameObject.GetComponent<Balloon>() != null;
+                bool hitEnemy = collision.collider.gameObject.GetComponent <MoveTowardsPlayer>() != null;
 
 				if ( travelledFrames < 2 && !canStick )
 				{
@@ -165,15 +160,15 @@ namespace Valve.VR.InteractionSystem
 				else
 				{
 					// Only count collisions with good speed so that arrows on the ground can't deal damage
-					// always pop balloons
-					if ( rbSpeed > 0.1f || hitBalloon )
+					// always pop balloons and enemies
+					if ( rbSpeed > 0.1f || hitBalloon  || hitEnemy)
 					{
 						collision.collider.gameObject.SendMessageUpwards( "ApplyDamage", SendMessageOptions.DontRequireReceiver );
 						gameObject.SendMessage( "HasAppliedDamage", SendMessageOptions.DontRequireReceiver );
 					}
 				}
 
-				if ( hitBalloon)
+				if ( hitBalloon || hitEnemy )
 				{
 					// Revert my physics properties cause I don't want balloons to influence my travel
 					transform.position = prevPosition;
@@ -198,16 +193,17 @@ namespace Valve.VR.InteractionSystem
 
         private void OnTriggerEnter(Collider other)
         {
-            bool hitEnemy = other.gameObject.GetComponent<MoveTowardsPlayer>() != null;
             bool hitPickup = other.gameObject.GetComponent<Rotator>() != null;
+            bool hitEnemy = other.gameObject.GetComponent<MoveTowardsPlayer>() != null;
 
-            if (hitEnemy || hitPickup)
+            if(hitPickup || hitEnemy)
             {
                 other.gameObject.SendMessageUpwards("ApplyDamage", SendMessageOptions.DontRequireReceiver);
                 gameObject.SendMessage("HasAppliedDamage", SendMessageOptions.DontRequireReceiver);
                 Destroy(gameObject);
             }
         }
+
 
         //-------------------------------------------------
         private void StickInTarget( Collision collision, bool bSkipRayCast )
